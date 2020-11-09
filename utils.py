@@ -39,12 +39,13 @@ def set_notification_embed(embedDescription):
 
 """ Set role by request on role's owner """
 async def set_role_by_owner(channel, message, author, authorsRole, server):
-    print('Requested by ' + author.nick)
-    user_id = message.split()[1].replace('<', '').replace('>', '').replace('!', '').replace('@', '')
+    print('Requested by ' + author.name)
+    user_id = int(message.split()[1].replace('<', '').replace('>', '').replace('!', '').replace('@', ''))
     print('mes[1] == ' + message.split()[1])
+    print('id == ' + str(user_id))
     try:
-        user = await server.fetch_member(user_id)
-        print('user == ' + user.nick)
+        user = await server.fetch_member(user_id)       #try to use get_member(user_id) instead (not coroutine)
+        print('user == ' + user.name)
         if user.roles.count(authorsRole) == 1:
             error = set_error_embed("У данного пользователя уже есть доступ")
             await channel.send(embed=error)
@@ -71,12 +72,12 @@ async def set_role_by_owner(channel, message, author, authorsRole, server):
 
 """ Delete role by request on role's owner """
 async def delete_role_by_owner(channel, message, author, authorsRole, server):
-    print('Requested by ' + author.nick)
+    print('Requested by ' + author.name)
     user_id = message.split()[1].replace('<', '').replace('>', '').replace('!', '').replace('@', '')
     print('mes[1] == ' + message.split()[1])
     try:
-        user = await server.fetch_member(user_id)
-        print('user == ' + user.nick)
+        user = await server.fetch_member(user_id)       #try to use get_member(user_id) instead (not coroutine)
+        print('user == ' + user.name)
         if user.roles.count(authorsRole) == 0:
             error = set_error_embed("У данного пользователя нет доступа")
             await channel.send(embed=error)
@@ -103,7 +104,7 @@ async def delete_role_by_owner(channel, message, author, authorsRole, server):
 
 """ Change users nickname """
 async def change_nickname(channel, message, author, server):
-    print('Requested by ' + author.nick)
+    print('Requested by ' + author.name)
     user_id = message.split()[1].replace('<', '').replace('>', '').replace('!', '').replace('@', '')
     print('mes[1] == ' + message.split()[1])
     print('userId == ' + str(user_id))
@@ -114,8 +115,8 @@ async def change_nickname(channel, message, author, server):
             newNick = newNick + i + ' '
         counter = counter + 1
     print('new nickname == ' + newNick)
-    user = await server.fetch_member(int(user_id))
-    print('user == ' + user.nick)
+    user = await server.fetch_member(user_id)       #try to use get_member(user_id) instead (not coroutine)
+    print('user == ' + user.name)
     try:
         if newNick != '':
             try:
