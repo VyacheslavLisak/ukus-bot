@@ -47,7 +47,7 @@ async def set_role_by_owner(channel, message, author, authorsRole, server):
         user = await server.fetch_member(user_id)       #try to use get_member(user_id) instead (not coroutine)
         print('user == ' + user.name)
         if user.roles.count(authorsRole) == 1:
-            error = set_error_embed("У данного пользователя уже есть доступ")
+            error = set_information_embed("У данного пользователя уже есть доступ")
             await channel.send(embed=error)
             print('User already has access\n\n')
             return
@@ -79,7 +79,7 @@ async def delete_role_by_owner(channel, message, author, authorsRole, server):
         user = await server.fetch_member(user_id)       #try to use get_member(user_id) instead (not coroutine)
         print('user == ' + user.name)
         if user.roles.count(authorsRole) == 0:
-            error = set_error_embed("У данного пользователя нет доступа")
+            error = set_information_embed("У данного пользователя нет доступа")
             await channel.send(embed=error)
             print('User do not has access\n\n')
             return
