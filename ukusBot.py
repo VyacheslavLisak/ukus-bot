@@ -3,6 +3,8 @@ import asyncio
 import botToken
 import utils
 import helpMessage
+import requests
+from bs4 import BeautifulSoup
 
 
 """ Server """
@@ -10,6 +12,7 @@ ukus = None
 
 """ Channels """
 rolesChannel = None
+bonusCodesChannel = None
 
 """ Admins """
 slava = None
@@ -30,6 +33,7 @@ async def on_ready():
     """ Global variables """
     global ukus
     global rolesChannel
+    global bonusCodesChannel
     global slava
     global zamkom
     global voenkom
@@ -52,6 +56,7 @@ async def on_ready():
 
     """ Set 'test_bot_channel' channel """
     rolesChannel = client.get_channel(717471224321540206)
+    bonusCodesChannel = client.get_channel(707943672691294260)
     
     """ Set server admins """
     slava = client.get_user(225667885240942592)
@@ -62,6 +67,14 @@ async def on_ready():
 
     """ Set public role """
     publicRole = ukus.get_role(638862708309229579)
+
+    """ Send bonus codes """
+    await send_bonus_codes()
+
+    """ Embed fields start here """
+    '''embed = utils.set_notification_embed('У бота была найдена и исправлена ошибка из-за которой он не мог найти нового пользователя')
+    await rolesChannel.send(embed=embed)'''
+    """ Embed fields end here """
 
 
 @client.event
@@ -151,6 +164,47 @@ async def on_message(message):
             information = utils.set_information_embed(helpMessage.helpMessage)
             await rolesChannel.send(embed=information)
             return
+
+
+async def get_bonus_codes():
+    url = 'http://wows.bfgc.net/bonuscodes.html'
+
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, features="html.parser")
+    tables=soup.find_all('table', {'class': 'table table-condensed table-bordered table-striped'})
+    item = str(tables)[157:1080].replace('<tr>', '').replace('</tr>', '').replace('<td>', '').replace('</td>', '').replace('<b>', '').replace('</b>', '').replace('</a>', '')
+
+    result = ''
+
+    for i in item.split('\n'):
+        if i.startswith('<a'):
+            result = result + i[i.find('>') + 1 : ] + '\n'
+
+    resultList = result.split('\n')
+    resultList.pop()
+    return resultList
+
+
+async def send_bonus_codes():
+    global ukus
+    global bonusCodesChannel
+    print ('Parsing started')
+    while (True):
+        bonusCodes = await get_bonus_codes()
+        newLastBonusCode = bonusCodes[0]
+        with open('lastBonusCode.txt', 'r') as file:
+            lastBonusCode = file.read()
+        for i in bonusCodes:
+            if i != lastBonusCode:
+                await bonusCodesChannel.send(i)
+            else:
+                if lastBonusCode == newLastBonusCode:
+                    break
+                else:
+                    with open('lastBonusCode.txt', 'w') as file:
+                        file.write(newLastBonusCode)
+                    break     
+        await asyncio.sleep(600)
 
 
 """ BOT TOKEN """
