@@ -69,7 +69,7 @@ async def on_ready():
     publicRole = ukus.get_role(638862708309229579)
 
     """ Send bonus codes """
-    await send_bonus_codes()
+    """await send_bonus_codes()"""
 
     """ Embed fields start here """
     '''embed = utils.set_notification_embed('У бота была найдена и исправлена ошибка из-за которой он не мог найти нового пользователя')
